@@ -25,8 +25,6 @@ mqtt.connect()
 # critical, most of those disappear.
 logging.getLogger("bleson").setLevel(logging.CRITICAL)
 
-print("HELLOOOOOO")
-
 # basic celsius to fahrenheit function
 def c2f(val):
     return round(32 + 9 * val / 5, 2)
@@ -42,11 +40,8 @@ def temp_hum(values, battery, address):
         mult = -1
         values = bytes(values[0] & 0x7ff) + values[1:]
     values = int.from_bytes(values, "big")
-    print(values)
     temp = float(values / 10000) * mult
-    print(temp)
     hum = float((values % 1000) / 10)
-    print(hum)
     # this print looks like this:
     # 2021-12-27T11:22:17.040469 BDAddress('A4:C1:38:9F:1B:A9') Temp: 45.91 F  Humidity: 25.8 %  Battery: 100 %
     logging.info(f"decoded values: {address} Temp: {c2f(temp)} F  Humidity: {hum} %  Battery: {battery}")
