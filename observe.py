@@ -37,14 +37,19 @@ def temp_hum(values, battery, address):
     # the data has a 1 bit in the first position if it's negative.
     mult = 1
     if values[0] & 0x80 == 128:
+        print(f"value: {values}")
         mult = -1
-        values = bytes(values[0] & 0x7ff) + values[1:]
+        values = (values[0] & 0x7f).to_bytes(1, "big") + values[1:]
     values = int.from_bytes(values, "big")
     temp = float(values / 10000) * mult
     hum = float((values % 1000) / 10)
+    if temp < 0:
+        print(f"temperature in C: {temp} and F: {c2f(temp)}")
+        print(f"raw data: {values}")
+    
     # this print looks like this:
     # 2021-12-27T11:22:17.040469 BDAddress('A4:C1:38:9F:1B:A9') Temp: 45.91 F  Humidity: 25.8 %  Battery: 100 %
-    logging.info(f"decoded values: {address} Temp: {c2f(temp)} F  Humidity: {hum} %  Battery: {battery}")
+    # logging.info(f"decoded values: {address} Temp: {c2f(temp)} F  Humidity: {hum} %  Battery: {battery}")
     # this code originally just printed the data, but we need it to publish to mqtt.
     # added the return values to be used elsewhere
     return c2f(temp), hum, battery
